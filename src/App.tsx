@@ -59,9 +59,22 @@ const generateAllAlerts = () => {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('youtube');
-  const [selectedBorrowerId, setSelectedBorrowerId] = useState<number | null>(null);
-  const [alertsData, setAlertsData] = useState<any[]>([]);
+  const [selectedBorrowerId, setSelectedBorrowerId] = useState(null);
+  const [alertsData, setAlertsData] = useState([]);
   const [isAlertPopoverOpen, setIsAlertPopoverOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // 화면 크기 감지
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   // 컴포넌트 마운트 시 알림 데이터 생성
   useEffect(() => {
@@ -69,36 +82,85 @@ export default function App() {
     setAlertsData(alerts);
   }, []);
 
-  const handleAlertClick = (borrowerId: number) => {
-    setSelectedBorrowerId(borrowerId);
+  // 외부 클릭 시 팝오버 닫기
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // 알림 버튼이나 팝오버 내부를 클릭한 경우가 아니라면 팝오버 닫기
+      const target = event.target;
+      const popoverContent = target.closest('[data-radix-popper-content-wrapper]');
+      const alertButton = target.closest('[data-alert-button]');
+      
+      if (!popoverContent && !alertButton && isAlertPopoverOpen) {
+        setIsAlertPopoverOpen(false);
+      }
+    };
+
+    if (isAlertPopoverOpen) {
+      document.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [isAlertPopoverOpen]);
+
+  const handleAlertClick = (identifier, event) => {
+    // 이벤트 전파 중단 - 팝오버 내부 클릭만 처리
+    if (event) {
+      event.stopPropagation();
+    }
+
+    // identifier가 number이면 borrowerId, string이면 channelId로 처리
+    if (typeof identifier === 'number') {
+      setSelectedBorrowerId(identifier);
+    } else {
+      // channelId로부터 borrowerId 찾기
+      const borrower = borrowersData.find(b => b.channelId === identifier);
+      if (borrower) {
+        setSelectedBorrowerId(borrower.id);
+      }
+    }
+    
     setActiveTab('borrower');
-    setIsAlertPopoverOpen(false); // 알림 팝오버 닫기
+    setIsAlertPopoverOpen(false); // 즉시 팝오버 닫기
+  };
+
+  // 다른 컴포넌트용 단순 핸들러
+  const handleSimpleAlertClick = (identifier) => {
+    handleAlertClick(identifier, null);
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="border-b bg-white shadow-sm">
-          <div className="container mx-auto px-6">
-            <div className="flex items-center justify-between py-4">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-3">
-                  <img src={logo} alt="한국투자저축은행" className="h-12" />
+          <div className="container mx-auto px-6 sm:px-8 lg:px-10">
+            
+            {/* 데스크톱 레이아웃 - 한 줄 (lg 이상) */}
+            <div 
+              className="hidden lg:flex desktop-only force-desktop-only items-center justify-between py-6 lg:py-8"
+              style={{ display: !isMobile ? 'flex' : 'none' }}
+            >
+              <div className="flex items-center gap-4 sm:gap-6 min-w-0 flex-1">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <img src={logo} alt="한국투자저축은행" className="h-12 sm:h-14 md:h-16 lg:h-18 flex-shrink-0" />
                 </div>
-                <div className="border-l border-gray-300 h-8"></div>
-                <div>
-                  <h1 className="text-gray-800">한투 유투(Youtoo) 신용대출</h1>
-                  <div className="text-sm text-gray-500">사후관리 시스템</div>
+                <div className="border-l border-gray-300 h-8 sm:h-10 md:h-12 hidden xs:block"></div>
+                <div className="min-w-0">
+                  <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold text-gray-800 truncate">한투 유투(Youtoo) 신용대출</h1>
+                  <div className="text-sm sm:text-base md:text-lg text-gray-600 hidden sm:block mt-1">사후관리 시스템</div>
                 </div>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 sm:gap-6 flex-shrink-0">
                 {/* 알림 버튼 - 모든 탭에서 표시 */}
-                <Popover open={isAlertPopoverOpen} onOpenChange={setIsAlertPopoverOpen}>
+                <Popover open={isAlertPopoverOpen}>
                   <PopoverTrigger asChild>
                     <Button 
                       variant="outline" 
                       size="sm"
                       className="relative"
+                      data-alert-button="desktop"
+                      onClick={() => setIsAlertPopoverOpen(!isAlertPopoverOpen)}
                     >
                       <Bell className="w-5 h-5" />
                       {alertsData && alertsData.length > 0 && (
@@ -110,13 +172,19 @@ export default function App() {
                       )}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-96 p-0 border shadow-lg" align="end">
+                  <PopoverContent 
+                    className="w-80 sm:w-96 p-0 border shadow-lg" 
+                    align="end" 
+                    sideOffset={8}
+                    onOpenAutoFocus={(e) => e.preventDefault()}
+                    onCloseAutoFocus={(e) => e.preventDefault()}
+                  >
                     <div className="bg-white rounded-md border">
                       {/* 고정 헤더 */}
-                      <div className="p-4 border-b bg-gray-50 rounded-t-md">
-                        <h4 className="font-semibold text-lg text-gray-900">알림 목록</h4>
+                      <div className="p-3 sm:p-4 border-b bg-gray-50 rounded-t-md">
+                        <h4 className="font-semibold text-base sm:text-lg text-gray-900">알림 목록</h4>
                         {alertsData && alertsData.length > 0 && (
-                          <p className="text-sm text-gray-600 mt-1">총 {alertsData.length}개의 알림</p>
+                          <p className="text-xs sm:text-sm text-gray-600 mt-1">총 {alertsData.length}개의 알림</p>
                         )}
                       </div>
                       
@@ -124,8 +192,8 @@ export default function App() {
                       <div 
                         className="overflow-y-scroll overflow-x-hidden alert-scroll-container"
                         style={{ 
-                          height: '300px',
-                          maxHeight: '300px'
+                          height: '280px',
+                          maxHeight: '50vh'
                         }}
                       >
                         {!alertsData || alertsData.length === 0 ? (
@@ -140,15 +208,12 @@ export default function App() {
                               <div 
                                 key={`${alert.borrowerId}-${index}`}
                                 className="p-4 rounded-lg border bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors shadow-sm" 
-                                onClick={() => handleAlertClick(alert.borrowerId)}
+                                onClick={(e) => handleAlertClick(alert.borrowerId, e)}
                               >
                                 <div className="flex items-start justify-between mb-3 gap-2">
                                   <div className="flex-1 min-w-0">
                                     <div className="font-medium text-gray-900 mb-1">
                                       {alert.borrowerName}
-                                    </div>
-                                    <div className="text-sm text-gray-600 mb-1">
-                                      채널: {alert.channelName}
                                     </div>
                                     <div className="flex items-center gap-1 text-xs text-gray-500">
                                       <span>채널 ID: {alert.channelId}</span>
@@ -209,31 +274,87 @@ export default function App() {
                     </div>
                   </PopoverContent>
                 </Popover>
-                <TabsList>
-                  <TabsTrigger value="youtube" className="gap-2">
-                    <Youtube className="w-4 h-4" />
-                    유튜브 대시보드
+                <TabsList 
+                  className="hidden lg:flex desktop-only h-12 lg:h-14"
+                  style={{ display: !isMobile ? 'flex' : 'none' }}
+                >
+                  <TabsTrigger value="youtube" className="gap-2 lg:gap-3 text-sm lg:text-base xl:text-lg px-4 lg:px-6 py-3 lg:py-4">
+                    <Youtube className="w-4 h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6" />
+                    <span className="font-medium">유튜브 대시보드</span>
                   </TabsTrigger>
-                  <TabsTrigger value="borrower" className="gap-2">
-                    <Users className="w-4 h-4" />
-                    대출자 관리
+                  <TabsTrigger value="borrower" className="gap-2 lg:gap-3 text-sm lg:text-base xl:text-lg px-4 lg:px-6 py-3 lg:py-4">
+                    <Users className="w-4 h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6" />
+                    <span className="font-medium">대출자 관리</span>
                   </TabsTrigger>
                 </TabsList>
               </div>
             </div>
+
+            {/* 모바일/태블릿 레이아웃 - 두 줄 (lg 미만) */}
+            <div 
+              className="lg:hidden mobile-only force-mobile-only"
+              style={{ display: isMobile ? 'block' : 'none' }}
+            >
+              {/* 첫 번째 줄: 로고, 제목, 알림 */}
+              <div className="flex items-center justify-between py-4 sm:py-5">
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                  <img src={logo} alt="한국투자저축은행" className="h-8 sm:h-10 md:h-12 flex-shrink-0" />
+                  <div className="border-l border-gray-300 h-6 sm:h-8 md:h-10 hidden xs:block"></div>
+                  <div className="min-w-0">
+                    <h1 className="text-sm sm:text-base md:text-lg font-semibold text-gray-800 truncate">한투 유투(Youtoo) 신용대출</h1>
+                    <div className="text-xs sm:text-sm md:text-base text-gray-600 hidden sm:block">사후관리 시스템</div>
+                  </div>
+                </div>                
+                {/* 알림 버튼 - 모바일용 */}
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="relative flex-shrink-0"
+                  data-alert-button="mobile"
+                  onClick={() => setIsAlertPopoverOpen(!isAlertPopoverOpen)}
+                >
+                  <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
+                  {alertsData && alertsData.length > 0 && (
+                    <Badge 
+                      className="absolute -top-1 -right-1 h-4 min-w-[16px] bg-red-500 text-white text-xs"
+                    >
+                      {alertsData.length}
+                    </Badge>
+                  )}
+                </Button>
+              </div>
+              
+              {/* 두 번째 줄: 탭 메뉴 */}
+              <div className="border-t border-gray-100 py-2">
+                <TabsList 
+                  className="lg:hidden mobile-only grid grid-cols-2 w-full h-10 sm:h-12"
+                  style={{ display: isMobile ? 'grid' : 'none' }}
+                >
+                  <TabsTrigger value="youtube" className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+                    <Youtube className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="font-medium">유튜브</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="borrower" className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+                    <Users className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="font-medium">관리</span>
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+            </div>
+
           </div>
         </div>
         
         <TabsContent value="youtube" className="mt-0">
           <YoutubeDashboard 
-            onAlertClick={handleAlertClick}
+            onAlertClick={handleSimpleAlertClick}
           />
         </TabsContent>
         
         <TabsContent value="borrower" className="mt-0">
           <BorrowerManagement 
             selectedBorrowerId={selectedBorrowerId} 
-            onAlertClick={handleAlertClick}
+            onAlertClick={handleSimpleAlertClick}
           />
         </TabsContent>
       </Tabs>

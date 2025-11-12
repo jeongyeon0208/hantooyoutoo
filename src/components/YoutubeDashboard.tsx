@@ -106,18 +106,18 @@ export function YoutubeDashboard({ onAlertClick }: YoutubeDashboardProps) {
   const monthlyData = currentData.monthly;
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 lg:py-8 max-w-7xl h-[calc(100vh-120px)] flex flex-col overflow-y-auto">
+    <div className="container mx-auto px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6 lg:py-8 max-w-7xl h-[calc(100vh-100px)] sm:h-[calc(100vh-120px)] flex flex-col overflow-y-auto">
       {/* Subscriber Range Filter */}
-      <div className="mb-6 sm:mb-8">
-        <Label className="mb-2 block text-base sm:text-lg">구독자 수 구간</Label>
+      <div className="mb-4 sm:mb-6 md:mb-8">
+        <Label className="mb-2 block text-sm sm:text-base md:text-lg">구독자 수 구간</Label>
         <Select value={subscriberRange} onValueChange={setSubscriberRange}>
-          <SelectTrigger className="w-full sm:w-64 text-base">
+          <SelectTrigger className="w-full sm:w-64 text-sm sm:text-base h-10 sm:h-auto">
             <SelectValue placeholder="구독자 수 구간 선택" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="0-10000">0 ~ 1만</SelectItem>
-            <SelectItem value="10000-100000">1만 ~ 10만</SelectItem>
-            <SelectItem value="100000+">10만 이상</SelectItem>
+            <SelectItem value="0-10000" className="text-sm sm:text-base">0 ~ 1만</SelectItem>
+            <SelectItem value="10000-100000" className="text-sm sm:text-base">1만 ~ 10만</SelectItem>
+            <SelectItem value="100000+" className="text-sm sm:text-base">10만 이상</SelectItem>
           </SelectContent>
         </Select>
       </div>

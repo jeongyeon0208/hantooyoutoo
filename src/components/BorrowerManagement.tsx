@@ -41,10 +41,10 @@ interface BorrowerManagementProps {
 
 export function BorrowerManagement({ selectedBorrowerId, onAlertClick }: BorrowerManagementProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedBorrower, setSelectedBorrower] = useState<number | null>(selectedBorrowerId);
-  const [highlightBorrower, setHighlightBorrower] = useState<number | null>(null);
+  const [selectedBorrower, setSelectedBorrower] = useState(selectedBorrowerId);
+  const [highlightBorrower, setHighlightBorrower] = useState(null);
   const [showRegistrationForm, setShowRegistrationForm] = useState(false);
-  const [riskFilter, setRiskFilter] = useState<string>('all');
+  const [riskFilter, setRiskFilter] = useState('all');
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -54,9 +54,9 @@ export function BorrowerManagement({ selectedBorrowerId, onAlertClick }: Borrowe
   });
 
   // Ref for the chart section to scroll to
-  const chartRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef(null);
   // Refs for borrower cards
-  const borrowerRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
+  const borrowerRefs = useRef({});
 
   // Update selected borrower when prop changes
   useEffect(() => {
@@ -116,7 +116,7 @@ export function BorrowerManagement({ selectedBorrowerId, onAlertClick }: Borrowe
   return (
     <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 lg:py-8 overflow-x-hidden max-w-7xl h-[calc(100vh-120px)] flex flex-col">
       {/* New Borrower Registration Button */}
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <Button 
           onClick={() => setShowRegistrationForm(!showRegistrationForm)}
           variant={showRegistrationForm ? "secondary" : "default"}
@@ -129,7 +129,7 @@ export function BorrowerManagement({ selectedBorrowerId, onAlertClick }: Borrowe
 
       {/* Conditional New Borrower Registration Form */}
       {showRegistrationForm && (
-        <Card className="mb-8 max-h-[300px] overflow-y-auto">
+        <Card className="mb-6 sm:mb-8 max-h-[300px] overflow-y-auto">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
               <UserPlus className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -208,30 +208,30 @@ export function BorrowerManagement({ selectedBorrowerId, onAlertClick }: Borrowe
       )}
 
       {/* Search Bar */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3">
-          <Search className="w-5 h-5 text-gray-500 flex-shrink-0" />
+      <div className="mb-6 sm:mb-8">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
             placeholder="이름, 전화번호, 채널 ID 검색..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 px-4 py-3 text-base sm:text-lg font-medium h-12 border-2 focus:border-blue-500 transition-colors"
+            className="pl-10 text-sm sm:text-base"
           />
         </div>
       </div>
 
       {/* Risk Level Filter */}
-      <div className="mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-          <div className="text-base font-semibold text-gray-700 flex-shrink-0">
+      <div className="mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+          <div className="flex items-center gap-2 text-sm sm:text-base font-medium text-gray-700">
             위험도 필터:
           </div>
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex flex-wrap gap-3">
             <Button
               variant={riskFilter === 'all' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setRiskFilter('all')}
-              className={`text-sm transition-all duration-300 relative ${
+              className={`text-xs sm:text-sm transition-all duration-300 relative ${
                 riskFilter === 'all' 
                   ? 'bg-black text-white border-black hover:bg-gray-800 hover:border-gray-800 shadow-xl ring-4 ring-gray-400 ring-opacity-75 transform scale-110 font-bold z-10' 
                   : 'text-gray-600 border-gray-300 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md'
@@ -246,7 +246,7 @@ export function BorrowerManagement({ selectedBorrowerId, onAlertClick }: Borrowe
               variant="outline"
               size="sm"
               onClick={() => setRiskFilter('high')}
-              className={`text-sm transition-all duration-300 relative ${
+              className={`text-xs sm:text-sm transition-all duration-300 relative ${
                 riskFilter === 'high' 
                   ? 'bg-red-100 text-red-800 border-red-200 hover:bg-red-200 hover:border-red-300 shadow-xl ring-4 ring-red-200 ring-opacity-75 transform scale-110 font-bold z-10' 
                   : 'text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400 hover:text-red-700 hover:shadow-md'
@@ -261,7 +261,7 @@ export function BorrowerManagement({ selectedBorrowerId, onAlertClick }: Borrowe
               variant="outline"
               size="sm"
               onClick={() => setRiskFilter('medium')}
-              className={`text-sm transition-all duration-300 relative ${
+              className={`text-xs sm:text-sm transition-all duration-300 relative ${
                 riskFilter === 'medium' 
                   ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-200 hover:border-yellow-300 shadow-xl ring-4 ring-yellow-200 ring-opacity-75 transform scale-110 font-bold z-10' 
                   : 'text-yellow-700 border-yellow-300 hover:bg-yellow-50 hover:border-yellow-400 hover:text-yellow-800 hover:shadow-md'
@@ -276,7 +276,7 @@ export function BorrowerManagement({ selectedBorrowerId, onAlertClick }: Borrowe
               variant="outline"
               size="sm"
               onClick={() => setRiskFilter('low')}
-              className={`text-sm transition-all duration-300 relative ${
+              className={`text-xs sm:text-sm transition-all duration-300 relative ${
                 riskFilter === 'low' 
                   ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-200 hover:border-green-300 shadow-xl ring-4 ring-green-200 ring-opacity-75 transform scale-110 font-bold z-10' 
                   : 'text-green-600 border-green-300 hover:bg-green-50 hover:border-green-400 hover:text-green-700 hover:shadow-md'
@@ -300,8 +300,8 @@ export function BorrowerManagement({ selectedBorrowerId, onAlertClick }: Borrowe
               대출자 관리
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 min-h-0">
-            <div className="space-y-3 h-full overflow-y-auto">
+          <CardContent>
+            <div className="space-y-3 max-h-[calc(100vh-400px)] overflow-y-auto">
               {filteredBorrowers.map((borrower) => (
                 <div
                   key={borrower.id}
