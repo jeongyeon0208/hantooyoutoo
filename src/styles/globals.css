@@ -187,3 +187,65 @@
 html {
   font-size: var(--font-size);
 }
+
+/* 알림 팝오버 스크롤바 스타일 */
+.alert-scroll-container {
+  scrollbar-width: thin;
+  scrollbar-color: #9ca3af #f1f5f9;
+}
+
+.alert-scroll-container::-webkit-scrollbar {
+  width: 12px;
+}
+
+.alert-scroll-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 6px;
+  margin: 4px;
+}
+
+.alert-scroll-container::-webkit-scrollbar-thumb {
+  background: #9ca3af;
+  border-radius: 6px;
+  border: 2px solid #f1f5f9;
+}
+
+.alert-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+.alert-scroll-container::-webkit-scrollbar-corner {
+  background: #f1f5f9;
+}
+
+/* 강제로 스크롤바 항상 표시 */
+.alert-scroll-container::-webkit-scrollbar-thumb {
+  background: #9ca3af !important;
+  min-height: 30px;
+}
+
+/* 알림 팝오버 스크롤바 스타일 (구버전) */
+.alert-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.alert-scroll::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 4px;
+}
+
+.alert-scroll::-webkit-scrollbar-thumb {
+  background: #9ca3af;
+  border-radius: 4px;
+  border: 1px solid #f3f4f6;
+}
+
+.alert-scroll::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Firefox 스크롤바 */
+.alert-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #9ca3af #f3f4f6;
+}

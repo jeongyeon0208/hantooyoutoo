@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Badge } from './ui/badge';
 import { Label } from './ui/label';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Users, Eye, Video, TrendingUp, TrendingDown, AlertCircle, ExternalLink } from 'lucide-react';
+import { Users, Eye, Video, TrendingUp, TrendingDown } from 'lucide-react';
 import { borrowersData } from './SharedData';
 
 // Mock data by subscriber range
@@ -96,24 +95,23 @@ const dataBySubscriberRange: Record<string, any> = {
 };
 
 interface YoutubeDashboardProps {
-  onAlertClick: (channelId: string) => void;
+  onAlertClick: (borrowerId: number) => void;
 }
 
 export function YoutubeDashboard({ onAlertClick }: YoutubeDashboardProps) {
-  const [subscriberRange, setSubscriberRange] = useState('100000+');
+  const [subscriberRange, setSubscriberRange] = useState('10000-100000');
   
   const currentData = dataBySubscriberRange[subscriberRange];
   const kpiData = currentData.kpi;
   const monthlyData = currentData.monthly;
-  const alerts = currentData.alerts;
 
   return (
-    <div className="container mx-auto px-6 py-8">
+    <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 lg:py-8 max-w-7xl h-[calc(100vh-120px)] flex flex-col overflow-y-auto">
       {/* Subscriber Range Filter */}
-      <div className="mb-8">
-        <Label className="mb-2 block">구독자 수 구간</Label>
+      <div className="mb-6 sm:mb-8">
+        <Label className="mb-2 block text-base sm:text-lg">구독자 수 구간</Label>
         <Select value={subscriberRange} onValueChange={setSubscriberRange}>
-          <SelectTrigger className="w-64">
+          <SelectTrigger className="w-full sm:w-64 text-base">
             <SelectValue placeholder="구독자 수 구간 선택" />
           </SelectTrigger>
           <SelectContent>
@@ -125,99 +123,117 @@ export function YoutubeDashboard({ onAlertClick }: YoutubeDashboardProps) {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm text-gray-600">구독자 수</CardTitle>
-            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-              <Users className="w-5 h-5 text-blue-600" />
+            <CardTitle className="text-base sm:text-lg text-gray-600">구독자 수</CardTitle>
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center">
+              <Users className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl mb-2">
+          <CardContent className="pt-2">
+            <div className="text-2xl sm:text-3xl lg:text-4xl mb-2 font-semibold">
               {kpiData.subscribers.current.toLocaleString()}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               {kpiData.subscribers.change > 0 ? (
-                <TrendingUp className="w-4 h-4 text-green-600" />
+                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
               ) : (
-                <TrendingDown className="w-4 h-4 text-red-600" />
+                <TrendingDown className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
               )}
-              <span className={`text-sm ${kpiData.subscribers.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <span className={`text-base sm:text-lg ${kpiData.subscribers.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {kpiData.subscribers.change > 0 ? '+' : ''}{kpiData.subscribers.change}%
               </span>
-              <span className="text-sm text-gray-500">전월 대비</span>
+              <span className="text-base sm:text-lg text-gray-500">전월 대비</span>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm text-gray-600">조회수</CardTitle>
-            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-              <Eye className="w-5 h-5 text-green-600" />
+            <CardTitle className="text-base sm:text-lg text-gray-600">조회수</CardTitle>
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-green-100 flex items-center justify-center">
+              <Eye className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl mb-2">
+          <CardContent className="pt-2">
+            <div className="text-2xl sm:text-3xl lg:text-4xl mb-2 font-semibold">
               {kpiData.views.current.toLocaleString()}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               {kpiData.views.change > 0 ? (
-                <TrendingUp className="w-4 h-4 text-green-600" />
+                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
               ) : (
-                <TrendingDown className="w-4 h-4 text-red-600" />
+                <TrendingDown className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
               )}
-              <span className={`text-sm ${kpiData.views.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <span className={`text-base sm:text-lg ${kpiData.views.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {kpiData.views.change > 0 ? '+' : ''}{kpiData.views.change}%
               </span>
-              <span className="text-sm text-gray-500">전월 대비</span>
+              <span className="text-base sm:text-lg text-gray-500">전월 대비</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="sm:col-span-2 lg:col-span-1">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm text-gray-600">영상 수</CardTitle>
-            <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-              <Video className="w-5 h-5 text-purple-600" />
+            <CardTitle className="text-base sm:text-lg text-gray-600">영상 수</CardTitle>
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-purple-100 flex items-center justify-center">
+              <Video className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl mb-2">
+          <CardContent className="pt-2">
+            <div className="text-2xl sm:text-3xl lg:text-4xl mb-2 font-semibold">
               {kpiData.videos.current.toLocaleString()}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               {kpiData.videos.change > 0 ? (
-                <TrendingUp className="w-4 h-4 text-green-600" />
+                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
               ) : (
-                <TrendingDown className="w-4 h-4 text-red-600" />
+                <TrendingDown className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
               )}
-              <span className={`text-sm ${kpiData.videos.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <span className={`text-base sm:text-lg ${kpiData.videos.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {kpiData.videos.change > 0 ? '+' : ''}{kpiData.videos.change}%
               </span>
-              <span className="text-sm text-gray-500">전월 대비</span>
+              <span className="text-base sm:text-lg text-gray-500">전월 대비</span>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 flex-1">
         {/* Monthly Trend Chart */}
-        <Card className="lg:col-span-2">
+        <Card className="min-h-0">
           <CardHeader>
-            <CardTitle>월별 평균 증감률 추이 (%)</CardTitle>
+            <CardTitle className="text-lg sm:text-xl">월별 평균 증감률 추이 (%)</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={350}>
+            <ResponsiveContainer width="100%" height={300} className="sm:h-[350px]">
               <LineChart data={monthlyData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="month" />
-                <YAxis yAxisId="subscribers" orientation="left" stroke="#3b82f6" label={{ value: '구독자 (%)', angle: -90, position: 'insideLeft', style: { fill: '#3b82f6' } }} />
-                <YAxis yAxisId="views" orientation="right" stroke="#10b981" label={{ value: '조회수 (%)', angle: 90, position: 'insideRight', style: { fill: '#10b981' } }} />
+                <XAxis 
+                  dataKey="month" 
+                  fontSize={14}
+                  className="text-sm sm:text-base"
+                />
+                <YAxis 
+                  yAxisId="subscribers" 
+                  orientation="left" 
+                  stroke="#3b82f6" 
+                  fontSize={12}
+                  className="text-xs sm:text-sm"
+                  label={{ value: '구독자 (%)', angle: -90, position: 'insideLeft', style: { fill: '#3b82f6', fontSize: '14px' } }} 
+                />
+                <YAxis 
+                  yAxisId="views" 
+                  orientation="right" 
+                  stroke="#10b981" 
+                  fontSize={12}
+                  className="text-xs sm:text-sm"
+                  label={{ value: '조회수 (%)', angle: 90, position: 'insideRight', style: { fill: '#10b981', fontSize: '14px' } }} 
+                />
                 <YAxis yAxisId="videos" orientation="right" stroke="#8b5cf6" />
                 <Tooltip formatter={(value: any) => `${value}%`} />
-                <Legend />
+                <Legend wrapperStyle={{ fontSize: '14px' }} />
                 <Line 
                   yAxisId="subscribers"
                   type="monotone" 
@@ -225,7 +241,7 @@ export function YoutubeDashboard({ onAlertClick }: YoutubeDashboardProps) {
                   stroke="#3b82f6" 
                   strokeWidth={2}
                   name="구독자 수 증감률"
-                  dot={{ fill: '#3b82f6' }}
+                  dot={{ fill: '#3b82f6', r: 3 }}
                 />
                 <Line 
                   yAxisId="views"
@@ -247,59 +263,6 @@ export function YoutubeDashboard({ onAlertClick }: YoutubeDashboardProps) {
                 />
               </LineChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Alerts Panel */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <AlertCircle className="w-5 h-5" />
-              알림
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {alerts.map((alert) => (
-                <div 
-                  key={alert.channelId} 
-                  className="p-4 rounded-lg border bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors" 
-                  onClick={() => onAlertClick(alert.channelId)}
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center gap-1">
-                      <a
-                        href={`https://www.youtube.com/channel/${alert.channelId}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-blue-600 hover:text-blue-800 underline inline-flex items-center gap-1"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {alert.channelId}
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    </div>
-                    <Badge 
-                      variant={alert.type === 'surge' ? 'default' : 'destructive'}
-                      className={alert.type === 'surge' ? 'bg-green-600' : ''}
-                    >
-                      {alert.type === 'surge' ? '급상승' : '급감'}
-                    </Badge>
-                  </div>
-                  <div className="mb-1">{alert.message}</div>
-                  <div className="flex items-center gap-1">
-                    {alert.change > 0 ? (
-                      <TrendingUp className="w-4 h-4 text-green-600" />
-                    ) : (
-                      <TrendingDown className="w-4 h-4 text-red-600" />
-                    )}
-                    <span className={`text-sm ${alert.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {alert.change > 0 ? '+' : ''}{alert.change}%
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
           </CardContent>
         </Card>
       </div>

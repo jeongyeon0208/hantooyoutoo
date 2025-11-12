@@ -145,19 +145,19 @@ export const borrowersData: Borrower[] = [
     channelId: 'UCoPbeiB6nmzEvowG3PcwDwQ',
     loanId: 'LOAN-2024-001',
     riskLevel: 'low',
-    subscribers: 125000,
-    views: 3850000,
+    subscribers: 1250000,
+    views: 38500000,
     videos: 245,
     subscribersChange: 25.5,
     viewsChange: 30.2,
     videosChange: 8.5,
     monthlyData: [
-      { month: '1월', subscribers: 95000, views: 2800000, videos: 220 },
-      { month: '2월', subscribers: 102000, views: 3050000, videos: 225 },
-      { month: '3월', subscribers: 109000, views: 3280000, videos: 230 },
-      { month: '4월', subscribers: 115000, views: 3450000, videos: 235 },
-      { month: '5월', subscribers: 120000, views: 3620000, videos: 240 },
-      { month: '6월', subscribers: 125000, views: 3850000, videos: 245 }
+      { month: '1월', subscribers: 950000, views: 28000000, videos: 220 },
+      { month: '2월', subscribers: 1020000, views: 30500000, videos: 225 },
+      { month: '3월', subscribers: 1090000, views: 32800000, videos: 230 },
+      { month: '4월', subscribers: 1150000, views: 34500000, videos: 235 },
+      { month: '5월', subscribers: 1200000, views: 36200000, videos: 240 },
+      { month: '6월', subscribers: 1250000, views: 38500000, videos: 245 }
     ]
   },
   {
@@ -168,19 +168,19 @@ export const borrowersData: Borrower[] = [
     channelId: 'UCxc1zCIwPEOMeEUC7tfu0-w',
     loanId: 'LOAN-2024-012',
     riskLevel: 'low',
-    subscribers: 152000,
-    views: 5280000,
+    subscribers: 1520000,
+    views: 52800000,
     videos: 285,
     subscribersChange: 18.2,
     viewsChange: 42.1,
     videosChange: 12.0,
     monthlyData: [
-      { month: '1월', subscribers: 125000, views: 3500000, videos: 248 },
-      { month: '2월', subscribers: 131000, views: 3850000, videos: 255 },
-      { month: '3월', subscribers: 137000, views: 4200000, videos: 262 },
-      { month: '4월', subscribers: 143000, views: 4600000, videos: 269 },
-      { month: '5월', subscribers: 148000, views: 4950000, videos: 277 },
-      { month: '6월', subscribers: 152000, views: 5280000, videos: 285 }
+      { month: '1월', subscribers: 1250000, views: 35000000, videos: 248 },
+      { month: '2월', subscribers: 1310000, views: 38500000, videos: 255 },
+      { month: '3월', subscribers: 1370000, views: 42000000, videos: 262 },
+      { month: '4월', subscribers: 1430000, views: 46000000, videos: 269 },
+      { month: '5월', subscribers: 1480000, views: 49500000, videos: 277 },
+      { month: '6월', subscribers: 1520000, views: 52800000, videos: 285 }
     ]
   },
   {
@@ -191,19 +191,19 @@ export const borrowersData: Borrower[] = [
     channelId: 'UCUgp8Lli-2w9AQ0cXEqgxpg',
     loanId: 'LOAN-2024-008',
     riskLevel: 'high',
-    subscribers: 118000,
-    views: 4250000,
+    subscribers: 1180000,
+    views: 42500000,
     videos: 268,
     subscribersChange: -5.5,
     viewsChange: -18.3,
     videosChange: -8.2,
     monthlyData: [
-      { month: '1월', subscribers: 132000, views: 5800000, videos: 298 },
-      { month: '2월', subscribers: 129000, views: 5450000, videos: 292 },
-      { month: '3월', subscribers: 126000, views: 5100000, videos: 285 },
-      { month: '4월', subscribers: 123000, views: 4750000, videos: 278 },
-      { month: '5월', subscribers: 120000, views: 4500000, videos: 273 },
-      { month: '6월', subscribers: 118000, views: 4250000, videos: 268 }
+      { month: '1월', subscribers: 1320000, views: 58000000, videos: 298 },
+      { month: '2월', subscribers: 1290000, views: 54500000, videos: 292 },
+      { month: '3월', subscribers: 1260000, views: 51000000, videos: 285 },
+      { month: '4월', subscribers: 1230000, views: 47500000, videos: 278 },
+      { month: '5월', subscribers: 1200000, views: 45000000, videos: 273 },
+      { month: '6월', subscribers: 1180000, views: 42500000, videos: 268 }
     ]
   },
   {
@@ -214,19 +214,19 @@ export const borrowersData: Borrower[] = [
     channelId: 'UCSxhYq6K0mxF24SmMGeNNQA',
     loanId: 'LOAN-2024-015',
     riskLevel: 'medium',
-    subscribers: 142000,
-    views: 4850000,
+    subscribers: 1420000,
+    views: 48500000,
     videos: 295,
     subscribersChange: -12.7,
     viewsChange: -6.8,
     videosChange: 2.5,
     monthlyData: [
-      { month: '1월', subscribers: 168000, views: 5400000, videos: 285 },
-      { month: '2월', subscribers: 163000, views: 5250000, videos: 287 },
-      { month: '3월', subscribers: 158000, views: 5120000, videos: 289 },
-      { month: '4월', subscribers: 153000, views: 5000000, videos: 291 },
-      { month: '5월', subscribers: 147000, views: 4920000, videos: 293 },
-      { month: '6월', subscribers: 142000, views: 4850000, videos: 295 }
+      { month: '1월', subscribers: 1680000, views: 54000000, videos: 285 },
+      { month: '2월', subscribers: 1630000, views: 52500000, videos: 287 },
+      { month: '3월', subscribers: 1580000, views: 51200000, videos: 289 },
+      { month: '4월', subscribers: 1530000, views: 50000000, videos: 291 },
+      { month: '5월', subscribers: 1470000, views: 49200000, videos: 293 },
+      { month: '6월', subscribers: 1420000, views: 48500000, videos: 295 }
     ]
   }
 ];

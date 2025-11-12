@@ -36,11 +36,15 @@ const getRiskLevelText = (level: string) => {
 
 interface BorrowerManagementProps {
   selectedBorrowerId: number | null;
+  onAlertClick?: (borrowerId: number) => void;
 }
 
-export function BorrowerManagement({ selectedBorrowerId }: BorrowerManagementProps) {
+export function BorrowerManagement({ selectedBorrowerId, onAlertClick }: BorrowerManagementProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBorrower, setSelectedBorrower] = useState<number | null>(selectedBorrowerId);
+  const [highlightBorrower, setHighlightBorrower] = useState<number | null>(null);
+  const [showRegistrationForm, setShowRegistrationForm] = useState(false);
+  const [riskFilter, setRiskFilter] = useState<string>('all');
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -58,6 +62,8 @@ export function BorrowerManagement({ selectedBorrowerId }: BorrowerManagementPro
   useEffect(() => {
     if (selectedBorrowerId !== null) {
       setSelectedBorrower(selectedBorrowerId);
+      setHighlightBorrower(selectedBorrowerId);
+      setTimeout(() => setHighlightBorrower(null), 2000);
       console.log('BorrowerManagement: Updated selectedBorrower to', selectedBorrowerId);
       
       // Scroll to selected borrower card first, then to chart
@@ -83,11 +89,15 @@ export function BorrowerManagement({ selectedBorrowerId }: BorrowerManagementPro
     }
   }, [selectedBorrowerId]);
 
-  const filteredBorrowers = borrowersData.filter(borrower => 
-    borrower.name.includes(searchQuery) ||
-    borrower.phone.includes(searchQuery) ||
-    borrower.channelId.includes(searchQuery)
-  );
+  const filteredBorrowers = borrowersData.filter(borrower => {
+    const matchesSearch = borrower.name.includes(searchQuery) ||
+      borrower.phone.includes(searchQuery) ||
+      borrower.channelId.includes(searchQuery);
+    
+    const matchesRisk = riskFilter === 'all' || borrower.riskLevel === riskFilter;
+    
+    return matchesSearch && matchesRisk;
+  });
 
   const handleFormChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -100,230 +110,347 @@ export function BorrowerManagement({ selectedBorrowerId }: BorrowerManagementPro
   const handleSubmit = () => {
     console.log('새 대출자 등록:', formData);
     handleReset();
+    setShowRegistrationForm(false);
   };
 
-  const currentBorrowerData = borrowersData.find(b => b.id === selectedBorrower);
-
   return (
-    <div className="container mx-auto px-6 py-8">
-      {/* Search Bar */}
+    <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 lg:py-8 overflow-x-hidden max-w-7xl h-[calc(100vh-120px)] flex flex-col">
+      {/* New Borrower Registration Button */}
       <div className="mb-8">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <Input
-            placeholder="이름, 전화번호, 채널 ID 검색..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
+        <Button 
+          onClick={() => setShowRegistrationForm(!showRegistrationForm)}
+          variant={showRegistrationForm ? "secondary" : "default"}
+          className="flex items-center gap-2 text-sm sm:text-base"
+        >
+          <UserPlus className="w-4 h-4" />
+          {showRegistrationForm ? "등록 취소" : "신규 대출자 등록"}
+        </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        {/* Risk Borrowers Panel */}
-        <Card className="lg:col-span-2">
+      {/* Conditional New Borrower Registration Form */}
+      {showRegistrationForm && (
+        <Card className="mb-8 max-h-[300px] overflow-y-auto">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5" />
-              대출자 관리
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3 max-h-[600px] overflow-y-auto">
-              {filteredBorrowers.map((borrower) => (
-                <div
-                  key={borrower.id}
-                  ref={(el) => (borrowerRefs.current[borrower.id] = el)}
-                  onClick={() => setSelectedBorrower(borrower.id)}
-                  className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                    selectedBorrower === borrower.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <div className="mb-1 font-medium">{borrower.name}</div>
-                      <div className="text-sm text-gray-600">{borrower.phone}</div>
-                      <div className="text-sm text-gray-600">생년월일: {borrower.birthDate}</div>
-                    </div>
-                    <Badge className={getRiskLevelColor(borrower.riskLevel)}>
-                      위험도: {getRiskLevelText(borrower.riskLevel)}
-                    </Badge>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4 mb-3 text-sm">
-                    <div>
-                      <span className="text-gray-600">채널 ID:</span>{' '}
-                      <a
-                        href={`https://www.youtube.com/channel/${borrower.channelId}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 underline inline-flex items-center gap-1"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {borrower.channelId}
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">대출 ID:</span> {borrower.loanId}
-                    </div>
-                  </div>
-
-                  <div className="pt-3 border-t border-gray-200">
-                    <div className="text-sm text-gray-600 mb-2">최근 KPI 변화</div>
-                    <div className="flex gap-4 text-sm">
-                      <div className="flex items-center gap-1">
-                        <span className="text-gray-600">구독자:</span>
-                        <span className={borrower.subscribersChange >= 0 ? 'text-green-600' : 'text-red-600'}>
-                          {borrower.subscribersChange >= 0 ? '+' : ''}{borrower.subscribersChange}%
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <span className="text-gray-600">조회수:</span>
-                        <span className={borrower.viewsChange >= 0 ? 'text-green-600' : 'text-red-600'}>
-                          {borrower.viewsChange >= 0 ? '+' : ''}{borrower.viewsChange}%
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <span className="text-gray-600">영상:</span>
-                        <span className={borrower.videosChange >= 0 ? 'text-green-600' : 'text-red-600'}>
-                          {borrower.videosChange >= 0 ? '+' : ''}{borrower.videosChange}%
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* New Borrower Registration Form */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <UserPlus className="w-5 h-5" />
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <UserPlus className="w-4 h-4 sm:w-5 sm:h-5" />
               신규 대출자 등록
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               <div>
-                <Label htmlFor="name">이름</Label>
+                <Label htmlFor="name" className="text-sm sm:text-base">이름</Label>
                 <Input
                   id="name"
                   placeholder="이름 입력"
                   value={formData.name}
                   onChange={(e) => handleFormChange('name', e.target.value)}
+                  className="text-sm sm:text-base"
                 />
               </div>
               
               <div>
-                <Label htmlFor="phone">전화번호</Label>
+                <Label htmlFor="phone" className="text-sm sm:text-base">전화번호</Label>
                 <Input
                   id="phone"
                   placeholder="010-0000-0000"
                   value={formData.phone}
                   onChange={(e) => handleFormChange('phone', e.target.value)}
+                  className="text-sm sm:text-base"
                 />
               </div>
               
               <div>
-                <Label htmlFor="birthDate">생년월일</Label>
+                <Label htmlFor="birthDate" className="text-sm sm:text-base">생년월일</Label>
                 <Input
                   id="birthDate"
                   placeholder="YYYY-MM-DD"
                   value={formData.birthDate}
                   onChange={(e) => handleFormChange('birthDate', e.target.value)}
+                  className="text-sm sm:text-base"
                 />
               </div>
               
               <div>
-                <Label htmlFor="channelId">채널 ID</Label>
+                <Label htmlFor="channelId" className="text-sm sm:text-base">채널 ID</Label>
                 <Input
                   id="channelId"
-                  placeholder="CH-2024-XXX"
+                  placeholder="UCxxxxxxxxxxxxxxxxxx"
                   value={formData.channelId}
                   onChange={(e) => handleFormChange('channelId', e.target.value)}
+                  className="text-sm sm:text-base"
                 />
               </div>
               
               <div>
-                <Label htmlFor="loanId">대출 ID</Label>
+                <Label htmlFor="loanId" className="text-sm sm:text-base">대출 ID</Label>
                 <Input
                   id="loanId"
                   placeholder="LOAN-2024-XXX"
                   value={formData.loanId}
                   onChange={(e) => handleFormChange('loanId', e.target.value)}
+                  className="text-sm sm:text-base"
                 />
               </div>
 
-              <div className="flex gap-2 pt-2">
-                <Button onClick={handleSubmit} className="flex-1">
+              <div className="md:col-span-2 lg:col-span-3 flex flex-col sm:flex-row gap-2 pt-2">
+                <Button onClick={handleSubmit} className="flex-1 text-sm sm:text-base">
                   등록
                 </Button>
-                <Button onClick={handleReset} variant="outline" className="gap-2">
-                  <RefreshCw className="w-4 h-4" />
+                <Button onClick={handleReset} variant="outline" className="gap-2 text-sm sm:text-base">
+                  <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4" />
                   초기화
                 </Button>
               </div>
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Search Bar */}
+      <div className="mb-8">
+        <div className="flex items-center gap-3">
+          <Search className="w-5 h-5 text-gray-500 flex-shrink-0" />
+          <Input
+            placeholder="이름, 전화번호, 채널 ID 검색..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1 px-4 py-3 text-base sm:text-lg font-medium h-12 border-2 focus:border-blue-500 transition-colors"
+          />
+        </div>
       </div>
 
-      {/* Selected Borrower Chart */}
-      {selectedBorrower && currentBorrowerData && (
-        <Card ref={chartRef}>
+      {/* Risk Level Filter */}
+      <div className="mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="text-base font-semibold text-gray-700 flex-shrink-0">
+            위험도 필터:
+          </div>
+          <div className="flex items-center gap-3 flex-wrap">
+            <Button
+              variant={riskFilter === 'all' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setRiskFilter('all')}
+              className={`text-sm transition-all duration-300 relative ${
+                riskFilter === 'all' 
+                  ? 'bg-black text-white border-black hover:bg-gray-800 hover:border-gray-800 shadow-xl ring-4 ring-gray-400 ring-opacity-75 transform scale-110 font-bold z-10' 
+                  : 'text-gray-600 border-gray-300 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md'
+              }`}
+            >
+              {riskFilter === 'all' && (
+                <div className="absolute inset-0 bg-gray-800 rounded-md opacity-20 animate-pulse"></div>
+              )}
+              <span className="relative z-10">전체</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setRiskFilter('high')}
+              className={`text-sm transition-all duration-300 relative ${
+                riskFilter === 'high' 
+                  ? 'bg-red-100 text-red-800 border-red-200 hover:bg-red-200 hover:border-red-300 shadow-xl ring-4 ring-red-200 ring-opacity-75 transform scale-110 font-bold z-10' 
+                  : 'text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400 hover:text-red-700 hover:shadow-md'
+              }`}
+            >
+              {riskFilter === 'high' && (
+                <div className="absolute inset-0 bg-red-200 rounded-md opacity-20 animate-pulse"></div>
+              )}
+              <span className="relative z-10">높음</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setRiskFilter('medium')}
+              className={`text-sm transition-all duration-300 relative ${
+                riskFilter === 'medium' 
+                  ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-200 hover:border-yellow-300 shadow-xl ring-4 ring-yellow-200 ring-opacity-75 transform scale-110 font-bold z-10' 
+                  : 'text-yellow-700 border-yellow-300 hover:bg-yellow-50 hover:border-yellow-400 hover:text-yellow-800 hover:shadow-md'
+              }`}
+            >
+              {riskFilter === 'medium' && (
+                <div className="absolute inset-0 bg-yellow-200 rounded-md opacity-20 animate-pulse"></div>
+              )}
+              <span className="relative z-10">중간</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setRiskFilter('low')}
+              className={`text-sm transition-all duration-300 relative ${
+                riskFilter === 'low' 
+                  ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-200 hover:border-green-300 shadow-xl ring-4 ring-green-200 ring-opacity-75 transform scale-110 font-bold z-10' 
+                  : 'text-green-600 border-green-300 hover:bg-green-50 hover:border-green-400 hover:text-green-700 hover:shadow-md'
+              }`}
+            >
+              {riskFilter === 'low' && (
+                <div className="absolute inset-0 bg-green-200 rounded-md opacity-20 animate-pulse"></div>
+              )}
+              <span className="relative z-10">정상</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 mb-6 sm:mb-8 flex-1 min-h-0">
+        {/* Risk Borrowers Panel */}
+        <Card className="flex flex-col h-full">
           <CardHeader>
-            <CardTitle>
-              {currentBorrowerData.name}님의 월별 추이
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5" />
+              대출자 관리
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={350}>
-              <LineChart data={currentBorrowerData.monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="month" />
-                <YAxis yAxisId="subscribers" orientation="left" stroke="#3b82f6" />
-                <YAxis yAxisId="views" orientation="right" stroke="#10b981" />
-                <YAxis yAxisId="videos" orientation="right" stroke="#8b5cf6" />
-                <Tooltip />
-                <Legend />
-                <Line 
-                  yAxisId="subscribers"
-                  type="monotone" 
-                  dataKey="subscribers" 
-                  stroke="#3b82f6" 
-                  strokeWidth={2}
-                  name="구독자 수"
-                  dot={{ fill: '#3b82f6' }}
-                />
-                <Line 
-                  yAxisId="views"
-                  type="monotone" 
-                  dataKey="views" 
-                  stroke="#10b981" 
-                  strokeWidth={2}
-                  name="조회수"
-                  dot={{ fill: '#10b981' }}
-                />
-                <Line 
-                  yAxisId="videos"
-                  type="monotone" 
-                  dataKey="videos" 
-                  stroke="#8b5cf6" 
-                  strokeWidth={2}
-                  name="영상 수"
-                  dot={{ fill: '#8b5cf6' }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+          <CardContent className="flex-1 min-h-0">
+            <div className="space-y-3 h-full overflow-y-auto">
+              {filteredBorrowers.map((borrower) => (
+                <div
+                  key={borrower.id}
+                  ref={(el) => (borrowerRefs.current[borrower.id] = el)}
+                  className="border border-gray-200 rounded-lg"
+                >
+                  <div
+                    onClick={() => setSelectedBorrower(selectedBorrower === borrower.id ? null : borrower.id)}
+                    className={`p-4 rounded-lg cursor-pointer transition-all ${
+                      selectedBorrower === borrower.id
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <div className="mb-1 font-medium">{borrower.name}</div>
+                        <div className="text-sm text-gray-600">{borrower.phone}</div>
+                        <div className="text-sm text-gray-600">생년월일: {borrower.birthDate}</div>
+                      </div>
+                      <Badge className={getRiskLevelColor(borrower.riskLevel)}>
+                        위험도: {getRiskLevelText(borrower.riskLevel)}
+                      </Badge>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4 mb-3 text-sm">
+                      <div className="min-w-0">
+                        <span className="text-gray-600">채널 ID:</span>{' '}
+                        <a
+                          href={`https://www.youtube.com/channel/${borrower.channelId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 underline inline-flex items-center gap-1 break-all"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <span className="truncate max-w-[120px]">{borrower.channelId}</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
+                      <div className="min-w-0">
+                        <span className="text-gray-600">대출 ID:</span> <span className="truncate block max-w-[120px]">{borrower.loanId}</span>
+                      </div>
+                    </div>
+
+                    <div className="pt-3 border-t border-gray-200">
+                      <div className="text-sm text-gray-600 mb-2">최근 KPI 변화</div>
+                      <div className="flex gap-4 text-sm">
+                        <div className="flex items-center gap-1">
+                          <span className="text-gray-600">구독자:</span>
+                          <span className={borrower.subscribersChange >= 0 ? 'text-green-600' : 'text-red-600'}>
+                            {borrower.subscribersChange >= 0 ? '+' : ''}{borrower.subscribersChange}%
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-gray-600">조회수:</span>
+                          <span className={borrower.viewsChange >= 0 ? 'text-green-600' : 'text-red-600'}>
+                            {borrower.viewsChange >= 0 ? '+' : ''}{borrower.viewsChange}%
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-gray-600">영상:</span>
+                          <span className={borrower.videosChange >= 0 ? 'text-green-600' : 'text-red-600'}>
+                            {borrower.videosChange >= 0 ? '+' : ''}{borrower.videosChange}%
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Chart directly below the selected borrower card */}
+                  {selectedBorrower === borrower.id && (
+                    <div 
+                      className={`transition-all duration-500 ${
+                        highlightBorrower === selectedBorrower 
+                          ? 'ring-4 ring-blue-400 ring-opacity-50 shadow-xl' 
+                          : ''
+                      }`}
+                    >
+                      <div className="border-t border-gray-200 bg-gray-50 p-4">
+                        <div className="mb-3">
+                          <h3 className="text-base sm:text-lg font-medium text-gray-900">
+                            {borrower.name}님의 월별 추이
+                          </h3>
+                        </div>
+                        <div className="bg-white rounded-lg p-4 shadow-sm overflow-hidden">
+                          <ResponsiveContainer width="100%" height={300}>
+                            <LineChart data={borrower.monthlyData}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                              <XAxis 
+                                dataKey="month" 
+                                fontSize={12}
+                                className="sm:text-sm"
+                              />
+                              <YAxis 
+                                yAxisId="subscribers" 
+                                orientation="left" 
+                                stroke="#3b82f6" 
+                                fontSize={10}
+                                className="sm:text-xs"
+                              />
+                              <YAxis 
+                                yAxisId="views" 
+                                orientation="right" 
+                                stroke="#10b981" 
+                                fontSize={10}
+                                className="sm:text-xs"
+                              />
+                              <YAxis yAxisId="videos" orientation="right" stroke="#8b5cf6" />
+                              <Tooltip />
+                              <Legend wrapperStyle={{ fontSize: '12px' }} />
+                              <Line 
+                                yAxisId="subscribers"
+                                type="monotone" 
+                                dataKey="subscribers" 
+                                stroke="#3b82f6" 
+                                strokeWidth={2}
+                                name="구독자 수"
+                                dot={{ fill: '#3b82f6', r: 3 }}
+                              />
+                              <Line 
+                                yAxisId="views"
+                                type="monotone" 
+                                dataKey="views" 
+                                stroke="#10b981" 
+                                strokeWidth={2}
+                                name="조회수"
+                                dot={{ fill: '#10b981', r: 3 }}
+                              />
+                              <Line 
+                                yAxisId="videos"
+                                type="monotone" 
+                                dataKey="videos" 
+                                stroke="#8b5cf6" 
+                                strokeWidth={2}
+                                name="영상 수"
+                                dot={{ fill: '#8b5cf6' }}
+                              />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
-      )}
+      </div>
     </div>
   );
 }
