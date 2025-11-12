@@ -181,10 +181,10 @@ export default function App() {
                   >
                     <div className="bg-white rounded-md border">
                       {/* 고정 헤더 */}
-                      <div className="p-4 sm:p-5 border-b bg-gray-50 rounded-t-md">
-                        <h4 className="font-semibold text-base sm:text-lg text-gray-900">알림 목록</h4>
+                      <div className="p-4 sm:p-6 border-b bg-gray-50 rounded-t-md">
+                        <h4 className="font-semibold text-base sm:text-lg text-gray-900 px-2">알림 목록</h4>
                         {alertsData && alertsData.length > 0 && (
-                          <p className="text-sm sm:text-base text-gray-600 mt-2 sm:mt-3 font-medium">총 {alertsData.length}개의 알림</p>
+                          <p className="text-xs sm:text-sm text-gray-600 m3-2 px-2">총 {alertsData.length}개의 알림</p>
                         )}
                       </div>
                       
@@ -229,15 +229,8 @@ export default function App() {
                                     </div>
                                   </div>
                                   <Badge 
-                                    className={alert.type === 'surge' 
-                                      ? 'bg-green-600 hover:bg-green-700 text-white border-green-600 font-semibold' 
-                                      : 'bg-red-600 hover:bg-red-700 text-white border-red-600 font-semibold'
-                                    }
-                                    style={{
-                                      backgroundColor: alert.type === 'surge' ? '#059669' : '#dc2626',
-                                      color: 'white',
-                                      border: 'none'
-                                    }}
+                                    variant={alert.type === 'surge' ? 'default' : 'destructive'}
+                                    className={alert.type === 'surge' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}
                                   >
                                     {alert.type === 'surge' ? '급상승' : '급감'}
                                   </Badge>
