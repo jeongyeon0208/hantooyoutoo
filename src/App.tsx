@@ -7,8 +7,7 @@ import { Youtube, Users, Bell, TrendingUp, TrendingDown, ExternalLink } from 'lu
 import { YoutubeDashboard } from './components/YoutubeDashboard';
 import { BorrowerManagement } from './components/BorrowerManagement';
 import { borrowersData } from './components/SharedData';
-
-const logo = '/src/assets/7a508a5e500c6022b788c500413b1c3692675726.png';
+import logo from './assets/logo.png';
 
 // 전체 대출자 대상으로 알림 생성
 const generateAllAlerts = () => {
@@ -130,9 +129,17 @@ export default function App() {
     handleAlertClick(identifier, null);
   };
 
+  // 탭 변경 핸들러 - 유튜브 대시보드로 이동 시 선택된 대출자 초기화
+  const handleTabChange = (value) => {
+    if (value === 'youtube' && selectedBorrowerId !== null) {
+      setSelectedBorrowerId(null);
+    }
+    setActiveTab(value);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <div className="border-b bg-white shadow-sm">
           <div className="container mx-auto px-6 sm:px-8 lg:px-10">
             
@@ -173,9 +180,11 @@ export default function App() {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent 
-                    className="w-80 sm:w-96 p-0 border shadow-lg" 
+                    className="w-[90vw] sm:w-80 md:w-96 p-0 border shadow-lg max-w-sm"
                     align="end" 
+                    side="bottom"
                     sideOffset={8}
+                    alignOffset={0}
                     onOpenAutoFocus={(e) => e.preventDefault()}
                     onCloseAutoFocus={(e) => e.preventDefault()}
                   >
@@ -192,8 +201,8 @@ export default function App() {
                       <div 
                         className="overflow-y-scroll overflow-x-hidden alert-scroll-container"
                         style={{ 
-                          height: '280px',
-                          maxHeight: '50vh'
+                          height: '200px',
+                          maxHeight: '35vh'
                         }}
                       >
                         {!alertsData || alertsData.length === 0 ? (
@@ -203,14 +212,14 @@ export default function App() {
                             </div>
                           </div>
                         ) : (
-                          <div className="p-3 space-y-3">
+                          <div className="p-4 space-y-3">
                             {alertsData.map((alert, index) => (
                               <div 
                                 key={`${alert.borrowerId}-${index}`}
-                                className="p-4 rounded-lg border bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors shadow-sm" 
+                                className="p-5 rounded-lg border bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors shadow-sm" 
                                 onClick={(e) => handleAlertClick(alert.borrowerId, e)}
                               >
-                                <div className="flex items-start justify-between mb-3 gap-2">
+                                <div className="flex items-start justify-between mb-3 gap-2 px-2">
                                   <div className="flex-1 min-w-0">
                                     <div className="font-medium text-gray-900 mb-1">
                                       {alert.borrowerName}
@@ -230,18 +239,22 @@ export default function App() {
                                   </div>
                                   <Badge 
                                     variant={alert.type === 'surge' ? 'default' : 'destructive'}
-                                    className={alert.type === 'surge' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}
+                                    className={alert.type === 'surge' ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-red-600 hover:bg-red-700 text-white'}
+                                    style={{
+                                      backgroundColor: alert.type === 'surge' ? '#059669' : '#dc2626',
+                                      color: 'white'
+                                    }}
                                   >
                                     {alert.type === 'surge' ? '급상승' : '급감'}
                                   </Badge>
                                 </div>
                                 
-                                <div className="bg-white rounded p-3 space-y-2">
-                                  <div className="text-sm font-medium text-gray-900">
+                                <div className="bg-white rounded p-4 space-y-3 mx-2">
+                                  <div className="text-sm font-medium text-gray-900 px-2 py-1">
                                     {alert.message}
                                   </div>
-                                  <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-1">
+                                  <div className="flex items-center justify-between px-2">
+                                    <div className="flex items-center gap-2">
                                       {alert.change > 0 ? (
                                         <TrendingUp className="w-4 h-4 text-green-600" />
                                       ) : (
@@ -261,9 +274,9 @@ export default function App() {
                                       </span>
                                     </div>
                                   </div>
-                                  <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
-                                    <div>구독자: {alert.subscribers?.toLocaleString() || 0}명</div>
-                                    <div>조회수: {alert.views?.toLocaleString() || 0}회</div>
+                                  <div className="grid grid-cols-2 gap-3 text-xs text-gray-600 px-2 py-2 bg-gray-50 rounded">
+                                    <div className="font-medium">구독자: {alert.subscribers?.toLocaleString() || 0}명</div>
+                                    <div className="font-medium">조회수: {alert.views?.toLocaleString() || 0}회</div>
                                   </div>
                                 </div>
                               </div>
