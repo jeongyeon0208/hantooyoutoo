@@ -8,6 +8,13 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { Search, UserPlus, RefreshCw, AlertTriangle, ExternalLink } from 'lucide-react';
 import { borrowersData, Borrower } from './SharedData';
 
+// 숫자에 콤마 추가 함수
+const formatNumber = (num: number | string): string => {
+  const number = typeof num === 'string' ? parseFloat(num) : num;
+  if (isNaN(number)) return num.toString();
+  return number.toLocaleString('ko-KR');
+};
+
 const getRiskLevelColor = (level: string) => {
   switch (level) {
     case 'high':
@@ -208,7 +215,7 @@ export function BorrowerManagement({ selectedBorrowerId, onAlertClick }: Borrowe
       )}
 
       {/* Search Bar */}
-      <div className="mb-10 sm:mb-12 mt-8 sm:mt-10">
+      <div className="mb-14 sm:mb-16 mt-8 sm:mt-10">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
@@ -327,7 +334,7 @@ export function BorrowerManagement({ selectedBorrowerId, onAlertClick }: Borrowe
                       </Badge>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-4 mb-3 text-sm">
+                    <div className="space-y-2 mb-3 text-sm">
                       <div className="min-w-0">
                         <span className="text-gray-600">채널 ID:</span>{' '}
                         <a
@@ -337,18 +344,18 @@ export function BorrowerManagement({ selectedBorrowerId, onAlertClick }: Borrowe
                           className="text-blue-600 hover:text-blue-800 underline inline-flex items-center gap-1 break-all"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <span className="truncate max-w-[120px]">{borrower.channelId}</span>
-                          <ExternalLink className="w-3 h-3" />
+                          <span className="break-all">{borrower.channelId}</span>
+                          <ExternalLink className="w-3 h-3 flex-shrink-0" />
                         </a>
                       </div>
                       <div className="min-w-0">
-                        <span className="text-gray-600">대출 ID:</span> <span className="truncate block max-w-[120px]">{borrower.loanId}</span>
+                        <span className="text-gray-600">대출 ID:</span> <span className="break-all">{borrower.loanId}</span>
                       </div>
                     </div>
 
                     <div className="pt-3 border-t border-gray-200">
                       <div className="text-sm text-gray-600 mb-2">최근 KPI 변화</div>
-                      <div className="flex gap-4 text-sm">
+                      <div className="flex flex-col gap-1 text-sm sm:flex-row sm:gap-4">
                         <div className="flex items-center gap-1">
                           <span className="text-gray-600">구독자:</span>
                           <span className={borrower.subscribersChange >= 0 ? 'text-green-600' : 'text-red-600'}>
@@ -386,58 +393,88 @@ export function BorrowerManagement({ selectedBorrowerId, onAlertClick }: Borrowe
                             {borrower.name}님의 월별 추이
                           </h3>
                         </div>
-                        <div className="bg-white rounded-lg p-4 shadow-sm overflow-hidden">
-                          <ResponsiveContainer width="100%" height={300}>
+                        <div className="bg-white rounded-lg p-2 sm:p-4 shadow-sm overflow-hidden">
+                          <ResponsiveContainer width="100%" height={250} className="sm:h-[300px]">
                             <LineChart data={borrower.monthlyData}>
                               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                               <XAxis 
                                 dataKey="month" 
-                                fontSize={12}
-                                className="sm:text-sm"
+                                fontSize={10}
+                                className="text-xs sm:text-sm"
+                                angle={-45}
+                                textAnchor="end"
+                                height={60}
                               />
                               <YAxis 
                                 yAxisId="subscribers" 
                                 orientation="left" 
                                 stroke="#3b82f6" 
-                                fontSize={10}
-                                className="sm:text-xs"
+                                fontSize={8}
+                                className="text-xs sm:text-sm"
+                                width={40}
+                                tickFormatter={formatNumber}
                               />
                               <YAxis 
                                 yAxisId="views" 
                                 orientation="right" 
                                 stroke="#10b981" 
-                                fontSize={10}
-                                className="sm:text-xs"
+                                fontSize={8}
+                                className="text-xs sm:text-sm"
+                                width={40}
+                                tickFormatter={formatNumber}
                               />
-                              <YAxis yAxisId="videos" orientation="right" stroke="#8b5cf6" />
-                              <Tooltip />
-                              <Legend wrapperStyle={{ fontSize: '12px' }} />
+                              <YAxis 
+                                yAxisId="videos" 
+                                orientation="right" 
+                                stroke="#8b5cf6" 
+                                fontSize={8}
+                                width={40}
+                                tickFormatter={formatNumber}
+                              />
+                              <Tooltip 
+                                contentStyle={{
+                                  fontSize: '12px',
+                                  padding: '8px'
+                                }}
+                                formatter={(value: any, name: string) => [
+                                  formatNumber(value),
+                                  name
+                                ]}
+                                labelFormatter={(label) => `월: ${label}`}
+                              />
+                              <Legend 
+                                wrapperStyle={{ 
+                                  fontSize: '10px',
+                                  paddingTop: '10px'
+                                }}
+                                iconSize={8}
+                              />
                               <Line 
                                 yAxisId="subscribers"
                                 type="monotone" 
                                 dataKey="subscribers" 
                                 stroke="#3b82f6" 
-                                strokeWidth={2}
-                                name="구독자 수"
-                                dot={{ fill: '#3b82f6', r: 3 }}
+                                strokeWidth={1.5}
+                                name="구독자"
+                                dot={{ fill: '#3b82f6', r: 2 }}
                               />
                               <Line 
                                 yAxisId="views"
                                 type="monotone" 
                                 dataKey="views" 
                                 stroke="#10b981" 
-                                strokeWidth={2}
+                                strokeWidth={1.5}
                                 name="조회수"
-                                dot={{ fill: '#10b981', r: 3 }}
+                                dot={{ fill: '#10b981', r: 2 }}
                               />
                               <Line 
                                 yAxisId="videos"
                                 type="monotone" 
                                 dataKey="videos" 
                                 stroke="#8b5cf6" 
-                                strokeWidth={2}
-                                name="영상 수"
-                                dot={{ fill: '#8b5cf6' }}
+                                strokeWidth={1.5}
+                                name="영상수"
+                                dot={{ fill: '#8b5cf6', r: 2 }}
                               />
                             </LineChart>
                           </ResponsiveContainer>

@@ -6,6 +6,13 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { Users, Eye, Video, TrendingUp, TrendingDown } from 'lucide-react';
 import { borrowersData } from './SharedData';
 
+// 숫자에 콤마 추가 함수
+const formatNumber = (num: number | string): string => {
+  const number = typeof num === 'string' ? parseFloat(num) : num;
+  if (isNaN(number)) return num.toString();
+  return number.toLocaleString('ko-KR');
+};
+
 // Mock data by subscriber range
 const dataBySubscriberRange: Record<string, any> = {
   '0-10000': {
@@ -206,60 +213,102 @@ export function YoutubeDashboard({ onAlertClick }: YoutubeDashboardProps) {
           <CardHeader>
             <CardTitle className="text-lg sm:text-xl">월별 평균 증감률 추이 (%)</CardTitle>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300} className="sm:h-[350px]">
+          <CardContent className="p-2 sm:p-6">
+            <ResponsiveContainer width="100%" height={250} className="sm:h-[350px]">
               <LineChart data={monthlyData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis 
                   dataKey="month" 
-                  fontSize={14}
-                  className="text-sm sm:text-base"
+                  fontSize={10}
+                  className="text-xs sm:text-base"
+                  angle={-45}
+                  textAnchor="end"
+                  height={60}
                 />
                 <YAxis 
                   yAxisId="subscribers" 
                   orientation="left" 
                   stroke="#3b82f6" 
-                  fontSize={12}
+                  fontSize={8}
                   className="text-xs sm:text-sm"
-                  label={{ value: '구독자 (%)', angle: -90, position: 'insideLeft', style: { fill: '#3b82f6', fontSize: '14px' } }} 
+                  width={35}
+                  label={{ 
+                    value: '구독자(%)', 
+                    angle: -90, 
+                    position: 'insideLeft', 
+                    style: { 
+                      fill: '#3b82f6', 
+                      fontSize: '10px',
+                      textAnchor: 'middle'
+                    } 
+                  }} 
                 />
                 <YAxis 
                   yAxisId="views" 
                   orientation="right" 
                   stroke="#10b981" 
-                  fontSize={12}
+                  fontSize={8}
                   className="text-xs sm:text-sm"
-                  label={{ value: '조회수 (%)', angle: 90, position: 'insideRight', style: { fill: '#10b981', fontSize: '14px' } }} 
+                  width={35}
+                  label={{ 
+                    value: '조회수(%)', 
+                    angle: 90, 
+                    position: 'insideRight', 
+                    style: { 
+                      fill: '#10b981', 
+                      fontSize: '10px',
+                      textAnchor: 'middle'
+                    } 
+                  }} 
                 />
-                <YAxis yAxisId="videos" orientation="right" stroke="#8b5cf6" />
-                <Tooltip formatter={(value: any) => `${value}%`} />
-                <Legend wrapperStyle={{ fontSize: '14px' }} />
+                <YAxis 
+                  yAxisId="videos" 
+                  orientation="right" 
+                  stroke="#8b5cf6" 
+                  fontSize={8}
+                  width={35}
+                />
+                <Tooltip 
+                  formatter={(value: any) => `${formatNumber(value)}%`}
+                  contentStyle={{
+                    fontSize: '12px',
+                    padding: '8px'
+                  }}
+                  labelFormatter={(label) => `월: ${label}`}
+                />
+                <Legend 
+                  wrapperStyle={{ 
+                    fontSize: '10px',
+                    paddingTop: '10px'
+                  }}
+                  iconSize={8}
+                />
                 <Line 
                   yAxisId="subscribers"
                   type="monotone" 
                   dataKey="subscribers" 
                   stroke="#3b82f6" 
-                  strokeWidth={2}
-                  name="구독자 수 증감률"
-                  dot={{ fill: '#3b82f6', r: 3 }}
+                  strokeWidth={1.5}
+                  name="구독자 증감률"
+                  dot={{ fill: '#3b82f6', r: 2 }}
                 />
                 <Line 
                   yAxisId="views"
                   type="monotone" 
                   dataKey="views" 
                   stroke="#10b981" 
-                  strokeWidth={2}
+                  strokeWidth={1.5}
                   name="조회수 증감률"
-                  dot={{ fill: '#10b981' }}
+                  dot={{ fill: '#10b981', r: 2 }}
                 />
                 <Line 
                   yAxisId="videos"
                   type="monotone" 
                   dataKey="videos" 
                   stroke="#8b5cf6" 
-                  strokeWidth={2}
-                  name="영상 수 증감률"
-                  dot={{ fill: '#8b5cf6' }}
+                  strokeWidth={1.5}
+                  name="영상 증감률"
+                  dot={{ fill: '#8b5cf6', r: 2 }}
                 />
               </LineChart>
             </ResponsiveContainer>
