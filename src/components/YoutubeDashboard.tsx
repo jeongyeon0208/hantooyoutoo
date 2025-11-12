@@ -108,93 +108,93 @@ export function YoutubeDashboard({ onAlertClick }: YoutubeDashboardProps) {
   return (
     <div className="container mx-auto px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6 lg:py-8 max-w-7xl h-[calc(100vh-100px)] sm:h-[calc(100vh-120px)] flex flex-col overflow-y-auto">
       {/* Subscriber Range Filter */}
-      <div className="mb-4 sm:mb-6 md:mb-8">
-        <Label className="mb-2 block text-sm sm:text-base md:text-lg">구독자 수 구간</Label>
+      <div className="mb-8 sm:mb-10 md:mb-12">
+        <Label className="mb-2 block text-base sm:text-lg md:text-xl">구독자 수 구간</Label>
         <Select value={subscriberRange} onValueChange={setSubscriberRange}>
-          <SelectTrigger className="w-full sm:w-64 text-sm sm:text-base h-10 sm:h-auto">
+          <SelectTrigger className="w-full sm:w-64 text-base sm:text-lg h-10 sm:h-auto">
             <SelectValue placeholder="구독자 수 구간 선택" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="0-10000" className="text-sm sm:text-base">0 ~ 1만</SelectItem>
-            <SelectItem value="10000-100000" className="text-sm sm:text-base">1만 ~ 10만</SelectItem>
-            <SelectItem value="100000+" className="text-sm sm:text-base">10만 이상</SelectItem>
+            <SelectItem value="0-10000" className="text-base sm:text-lg">0 ~ 1만</SelectItem>
+            <SelectItem value="10000-100000" className="text-base sm:text-lg">1만 ~ 10만</SelectItem>
+            <SelectItem value="100000+" className="text-base sm:text-lg">10만 이상</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-base sm:text-lg text-gray-600">구독자 수</CardTitle>
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center">
-              <Users className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
+            <CardTitle className="text-sm text-gray-600">구독자 수</CardTitle>
+            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+              <Users className="w-5 h-5 text-blue-600" />
             </div>
           </CardHeader>
-          <CardContent className="pt-2">
-            <div className="text-2xl sm:text-3xl lg:text-4xl mb-2 font-semibold">
+          <CardContent>
+            <div className="text-2xl mb-2">
               {kpiData.subscribers.current.toLocaleString()}
             </div>
-            <div className="flex items-center gap-1 sm:gap-2">
+            <div className="flex items-center gap-2">
               {kpiData.subscribers.change > 0 ? (
-                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                <TrendingUp className="w-4 h-4 text-green-600" />
               ) : (
-                <TrendingDown className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
+                <TrendingDown className="w-4 h-4 text-red-600" />
               )}
-              <span className={`text-base sm:text-lg ${kpiData.subscribers.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <span className={`text-sm ${kpiData.subscribers.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {kpiData.subscribers.change > 0 ? '+' : ''}{kpiData.subscribers.change}%
               </span>
-              <span className="text-base sm:text-lg text-gray-500">전월 대비</span>
+              <span className="text-sm text-gray-500">전월 대비</span>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-base sm:text-lg text-gray-600">조회수</CardTitle>
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-green-100 flex items-center justify-center">
-              <Eye className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
+            <CardTitle className="text-sm text-gray-600">조회수</CardTitle>
+            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+              <Eye className="w-5 h-5 text-green-600" />
             </div>
           </CardHeader>
-          <CardContent className="pt-2">
-            <div className="text-2xl sm:text-3xl lg:text-4xl mb-2 font-semibold">
+          <CardContent>
+            <div className="text-2xl mb-2">
               {kpiData.views.current.toLocaleString()}
             </div>
-            <div className="flex items-center gap-1 sm:gap-2">
+            <div className="flex items-center gap-2">
               {kpiData.views.change > 0 ? (
-                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                <TrendingUp className="w-4 h-4 text-green-600" />
               ) : (
-                <TrendingDown className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
+                <TrendingDown className="w-4 h-4 text-red-600" />
               )}
-              <span className={`text-base sm:text-lg ${kpiData.views.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <span className={`text-sm ${kpiData.views.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {kpiData.views.change > 0 ? '+' : ''}{kpiData.views.change}%
               </span>
-              <span className="text-base sm:text-lg text-gray-500">전월 대비</span>
+              <span className="text-sm text-gray-500">전월 대비</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="sm:col-span-2 lg:col-span-1">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-base sm:text-lg text-gray-600">영상 수</CardTitle>
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-purple-100 flex items-center justify-center">
-              <Video className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
+            <CardTitle className="text-sm text-gray-600">영상 수</CardTitle>
+            <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+              <Video className="w-5 h-5 text-purple-600" />
             </div>
           </CardHeader>
-          <CardContent className="pt-2">
-            <div className="text-2xl sm:text-3xl lg:text-4xl mb-2 font-semibold">
+          <CardContent>
+            <div className="text-2xl mb-2">
               {kpiData.videos.current.toLocaleString()}
             </div>
-            <div className="flex items-center gap-1 sm:gap-2">
+            <div className="flex items-center gap-2">
               {kpiData.videos.change > 0 ? (
-                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                <TrendingUp className="w-4 h-4 text-green-600" />
               ) : (
-                <TrendingDown className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
+                <TrendingDown className="w-4 h-4 text-red-600" />
               )}
-              <span className={`text-base sm:text-lg ${kpiData.videos.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <span className={`text-sm ${kpiData.videos.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {kpiData.videos.change > 0 ? '+' : ''}{kpiData.videos.change}%
               </span>
-              <span className="text-base sm:text-lg text-gray-500">전월 대비</span>
+              <span className="text-sm text-gray-500">전월 대비</span>
             </div>
           </CardContent>
         </Card>

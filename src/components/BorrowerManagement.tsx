@@ -129,7 +129,7 @@ export function BorrowerManagement({ selectedBorrowerId, onAlertClick }: Borrowe
 
       {/* Conditional New Borrower Registration Form */}
       {showRegistrationForm && (
-        <Card className="mb-6 sm:mb-8 max-h-[300px] overflow-y-auto">
+        <Card className="mb-10 sm:mb-12 max-h-[300px] overflow-y-auto">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
               <UserPlus className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -208,7 +208,7 @@ export function BorrowerManagement({ selectedBorrowerId, onAlertClick }: Borrowe
       )}
 
       {/* Search Bar */}
-      <div className="mb-6 sm:mb-8">
+      <div className="mb-10 sm:mb-12 mt-8 sm:mt-10">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
